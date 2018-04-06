@@ -1,0 +1,44 @@
+{
+  "name": "headless-shot",
+  "version": "0.0.1",
+  "main": "build/bundle.js",
+  "license": "apache-2.0",
+  "repository": "akito0107/instance-memoize",
+  "author": {
+    "name": "Akito Ito",
+    "email": "akito0107@gmail.com"
+  },
+  "scripts": {
+    "start": "node ./src/main.js",
+    "lint": "eslint ./src/**/*.js",
+    "lint:fix": "eslint --fix ./src/**/*.js",
+    "build": "rollup --config",
+    "test": "jest",
+    "test:cover": "jest --coverage",
+    "install:type": "flow-typed install --overwrite"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.2.2",
+    "babel-jest": "^22.4.3",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-power-assert": "^2.0.0",
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-flowtype": "^2.46.1",
+    "eslint-plugin-jest": "^21.15.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "flow-bin": "^0.69.0",
+    "flow-typed": "^2.4.0",
+    "jest": "^22.4.3",
+    "power-assert": "^1.5.0",
+    "prettier": "^1.11.1",
+    "prettier-eslint": "^8.8.1",
+    "rollup": "^0.57.1"
+  },
+  "dependencies": {
+    "js-yaml": "^3.11.0",
+    "pino": "^4.16.0",
+    "puppeteer": "^1.2.0"
+  }
+}

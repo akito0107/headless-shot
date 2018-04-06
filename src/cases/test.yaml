@@ -1,0 +1,28 @@
+version: 1
+url: http://localhost:3000/posts/new
+precondition:
+  url: http://localhost:3000/users/sign_in
+  steps:
+    - action:
+        type: input
+        form:
+          selector: 'input[name="user[email]"]'
+          value: 'hoge@hoge.com'
+    - action:
+        type: input
+        form:
+          selector: 'input[name="user[password]"]'
+          value: 'hoge12345'
+    - action:
+        type: click
+        selector: 'input[name="commit"]'
+    - action:
+        type: wait
+        duration: 1000
+  ensure:
+    location: 'http://localhost:3000/'
+steps:
+  - action:
+      type: input
+      form:
+        selector: 'input[name="post[]"]'
