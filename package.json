@@ -39,6 +39,7 @@
   "dependencies": {
     "js-yaml": "^3.11.0",
     "pino": "^4.16.0",
-    "puppeteer": "^1.2.0"
+    "puppeteer": "^1.2.0",
+    "randexp": "^0.4.9"
   }
 }
