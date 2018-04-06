@@ -15,9 +15,23 @@ async function main(scenario) {
   await goto(page, precondition["url"]);
   await run(page, precondition["steps"]);
   logger.info("precondition done.");
-  logger.info("main scenario start.");
-  await goto(page, scenario["url"]);
-  await run(page, scenario["steps"]);
+
+  const now = Date.now();
+  logger.info(`main scenario start. at ${now.toLocaleString()}`);
+  for (let i = 0; i < scenario["iteration"]; i++) {
+    logger.info(`${i} th iteration start`);
+    try {
+      await goto(page, scenario["url"]);
+      await run(page, scenario["steps"]);
+    } catch (e) {
+      await page.screenshot({
+        path: `${now.toLocaleString()}-${i}.png`,
+        fullPage: true
+      });
+      logger.error(e);
+    }
+  }
+  logger.info("main scenario end");
 
   await browser.close();
 }
@@ -35,7 +49,7 @@ async function run(page, steps) {
         if (input["value"]) {
           await page.type(input["selector"], input["value"]);
         } else {
-          const regex = new RegExp(input["constrains"]["regexp"])
+          const regex = new RegExp(input["constrains"]["regexp"]);
 
           const randex = new RandExp(regex);
           randex.defaultRange.subtract(32, 126);

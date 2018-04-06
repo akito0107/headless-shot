@@ -1,6 +1,6 @@
 version: 1
 url: http://localhost:3000/posts/new
-interation: 10
+iteration: 10
 precondition:
   url: http://localhost:3000/users/sign_in
   steps:
@@ -31,14 +31,14 @@ steps:
         selector: 'input[name="post[title]"]'
         constrains:
           required: True
-          regexp: '(?:[ぁ-ヶ]|[亜-黑]|ー){10,255}'
+          regexp: '(?:[a-z]|[0-9]|[ぁ-ヶ]|[亜-黑]|ー){10,255}'
   - action:
       type: input
       form:
         selector: 'input[name="post[body]"]'
         constrains:
           require: True
-          regexp: '(?:[ぁ-ヶ]|[亜-黑]|ー){10,255}'
+          regexp: '(?:[a-z]|[0-9]|[ぁ-ヶ]|[亜-黑]|ー){10,255}'
   - action:
       type: select
       form:
