@@ -9,35 +9,50 @@ const RandExp = require("randexp");
 async function main(scenario) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
+  // await page.setRequestInterception(true);
+
+  //   page.on("request", request => {
+  //     console.log("GOT NEW REQUEST", request.url());
+  //     request.continue();
+  //   });
+  //
+  //   page.on("response", response => {
+  //     console.log("GOT NEW RESPONSE", response.status(), response.headers());
+  //  });
 
   logger.info("precondition start.");
   const precondition = scenario["precondition"];
   await goto(page, precondition["url"]);
-  await run(page, precondition["steps"]);
+  try {
+    await run(page, precondition["steps"]);
+  } catch (e) {
+    logger.error(e);
+    await page.screenshot({ path: "pre.png", fullPage: true });
+  }
   logger.info("precondition done.");
 
   const now = Date.now();
   logger.info(`main scenario start. at ${now.toLocaleString()}`);
-  for (let i = 0; i < scenario["iteration"]; i++) {
-    logger.info(`${i} th iteration start`);
-    try {
-      await goto(page, scenario["url"]);
-      await run(page, scenario["steps"]);
-    } catch (e) {
-      await page.screenshot({
-        path: `${now.toLocaleString()}-${i}.png`,
-        fullPage: true
-      });
-      logger.error(e);
-    }
-  }
+  //  for (let i = 0; i < scenario["iteration"]; i++) {
+  //  logger.info(`${i} th iteration start`);
+  //  try {
+  //    await goto(page, scenario["url"]);
+  //    await run(page, scenario["steps"]);
+  //  } catch (e) {
+  //    await page.screenshot({
+  //      path: `${now.toLocaleString()}-${i}.png`,
+  //      fullPage: true
+  //    });
+  //    logger.error(e);
+  //  }
+  //}
   logger.info("main scenario end");
 
   await browser.close();
 }
 
 async function goto(page, url) {
-  await page.goto(url);
+  await page.goto(url, { waitUntil: "networkidle2" });
 }
 
 async function run(page, steps) {
@@ -48,7 +63,7 @@ async function run(page, steps) {
         const input = action["form"];
         if (input["value"]) {
           await page.type(input["selector"], input["value"]);
-        } else {
+        } else if (input["regexp"]) {
           const regex = new RegExp(input["constrains"]["regexp"]);
 
           const randex = new RandExp(regex);
@@ -62,8 +77,10 @@ async function run(page, steps) {
         await page.waitFor(action["duration"]);
         break;
       case "click":
-        const target = await page.$(action["selector"]);
-        await target.click();
+        await page.waitForSelector(action["selector"]);
+        await page.$eval(action["selector"], s => s.click());
+        await page.$eval(action["selector"], s => s.click());
+        await page.$eval(action["selector"], s => s.click());
         break;
       case "select":
         const select = action["form"];
@@ -75,6 +92,10 @@ async function run(page, steps) {
         break;
       case "ensure":
         await ensure(page, action);
+        break;
+      case "screenshot":
+        const filename = action["name"];
+        await page.screenshot({ path: `${filename}.png`, fullPage: true });
         break;
       default:
         throw new Error(`unknown action type: ${action["type"]}`);
