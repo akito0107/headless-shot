@@ -9,16 +9,6 @@ const RandExp = require("randexp");
 async function main(scenario) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  // await page.setRequestInterception(true);
-
-  //   page.on("request", request => {
-  //     console.log("GOT NEW REQUEST", request.url());
-  //     request.continue();
-  //   });
-  //
-  //   page.on("response", response => {
-  //     console.log("GOT NEW RESPONSE", response.status(), response.headers());
-  //  });
 
   logger.info("precondition start.");
   const precondition = scenario["precondition"];
@@ -33,19 +23,19 @@ async function main(scenario) {
 
   const now = Date.now();
   logger.info(`main scenario start. at ${now.toLocaleString()}`);
-  //  for (let i = 0; i < scenario["iteration"]; i++) {
-  //  logger.info(`${i} th iteration start`);
-  //  try {
-  //    await goto(page, scenario["url"]);
-  //    await run(page, scenario["steps"]);
-  //  } catch (e) {
-  //    await page.screenshot({
-  //      path: `${now.toLocaleString()}-${i}.png`,
-  //      fullPage: true
-  //    });
-  //    logger.error(e);
-  //  }
-  //}
+  for (let i = 0; i < scenario["iteration"]; i++) {
+    logger.info(`${i} th iteration start`);
+    try {
+      await goto(page, scenario["url"]);
+      await run(page, scenario["steps"]);
+    } catch (e) {
+      await page.screenshot({
+        path: `${now.toLocaleString()}-${i}.png`,
+        fullPage: true
+      });
+      logger.error(e);
+    }
+  }
   logger.info("main scenario end");
 
   await browser.close();
@@ -58,6 +48,7 @@ async function goto(page, url) {
 async function run(page, steps) {
   for (const step of steps) {
     const action = step["action"];
+    console.log(action);
     switch (action["type"]) {
       case "input":
         const input = action["form"];
@@ -78,9 +69,14 @@ async function run(page, steps) {
         break;
       case "click":
         await page.waitForSelector(action["selector"]);
+        await page.tap("body");
         await page.$eval(action["selector"], s => s.click());
-        await page.$eval(action["selector"], s => s.click());
-        await page.$eval(action["selector"], s => s.click());
+        break;
+      case "radio":
+        // const radios = await page.$$(action["form"]["selector"]);
+        // console.log(radios.length)
+        // const radio = radios[Math.floor(Math.random() * radios.length)];
+        await page.$eval(action["form"]["selector"], s => s.click())
         break;
       case "select":
         const select = action["form"];
